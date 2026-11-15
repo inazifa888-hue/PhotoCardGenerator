@@ -96,6 +96,8 @@ select:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .sizebar .count { align-self: auto; min-width: 5.5em; text-align: right; }
 .chk { display: flex; align-items: center; gap: 8px; font-size: 14.5px; cursor: pointer; }
 .chk input { width: 18px; height: 18px; accent-color: var(--accent); }
+.more { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line); padding-top: 16px; }
+.more-fields { display: flex; flex-direction: column; gap: 20px; }
 .tint { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .tint .color { min-width: 0; }
 code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12.5px; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
@@ -128,7 +130,7 @@ button.primary:hover { filter: brightness(1.08); }
   <div class="grid">
     <section class="panel" aria-label="কার্ডের তথ্য">
       <div class="field">
-        <span class="lbl">১. ছবি নির্বাচন করুন (১ থেকে ৬টি)</span>
+        <span class="lbl">ছবি নির্বাচন করুন (১ থেকে ৬টি)</span>
         <label class="file" for="photos">
           <input type="file" id="photos" accept="image/*" multiple>
           <span class="btn-like">ছবি বাছাই করুন</span>
@@ -141,21 +143,7 @@ button.primary:hover { filter: brightness(1.08); }
       </div>
 
       <div class="field">
-        <span class="lbl">ছবির বর্ডার (ঐচ্ছিক)</span>
-        <div class="tint">
-          <select id="bw" aria-label="বর্ডারের মোটা-পাতলা">
-            <option value="0">বর্ডার নেই</option>
-            <option value="10">পাতলা</option>
-            <option value="20" selected>মাঝারি</option>
-            <option value="32">মোটা</option>
-          </select>
-          <label class="color" for="bc"><input type="color" id="bc" value="#ffffff"><span>বর্ডারের রং</span></label>
-        </div>
-        <p class="hint">ছবির চারপাশে এই রঙের ফ্রেম বসবে, ছবি থাকবে মাঝখানে। রং না বদলালে কার্ডের থিমের সঙ্গে মিলে যাবে।</p>
-      </div>
-
-      <div class="field">
-        <label for="headline">২. সংবাদ শিরোনাম</label>
+        <label for="headline">সংবাদ শিরোনাম</label>
         <textarea id="headline" maxlength="500">নদীভাঙনে বিলীন হওয়ার পথে [[#ffd60a|তিন গ্রাম]], বাঁধ নির্মাণের দাবিতে মানববন্ধন</textarea>
         <span class="count" id="count"></span>
         <div class="tint">
@@ -181,13 +169,33 @@ button.primary:hover { filter: brightness(1.08); }
         <textarea id="sub" maxlength="140" style="min-height: 64px" placeholder="দরকার হলে এখানে এক-দুই লাইনের ছোট লেখা দিন"></textarea>
       </div>
 
+        <div class="more">
+        <button type="button" class="ghost" id="moreBtn" aria-expanded="false" aria-controls="moreFields">আরও অপশন দেখান ▾</button>
+        <p class="hint">নাম, সূত্র, ছবি সংগৃহীত, নিচের লেখা, বর্ডার আর রঙের অপশন এখানে পাবেন।</p>
+      </div>
+
+      <div class="more-fields" id="moreFields" hidden>
       <div class="field">
-        <label for="source">৩. সূত্র বা প্রতিবেদকের নাম</label>
+        <span class="lbl">ছবির বর্ডার (ঐচ্ছিক)</span>
+        <div class="tint">
+          <select id="bw" aria-label="বর্ডারের মোটা-পাতলা">
+            <option value="0">বর্ডার নেই</option>
+            <option value="10">পাতলা</option>
+            <option value="20" selected>মাঝারি</option>
+            <option value="32">মোটা</option>
+          </select>
+          <label class="color" for="bc"><input type="color" id="bc" value="#ffffff"><span>বর্ডারের রং</span></label>
+        </div>
+        <p class="hint">ছবির চারপাশে এই রঙের ফ্রেম বসবে, ছবি থাকবে মাঝখানে। রং না বদলালে কার্ডের থিমের সঙ্গে মিলে যাবে।</p>
+      </div>
+
+      <div class="field">
+        <label for="source">সূত্র বা প্রতিবেদকের নাম</label>
         <input type="text" id="source" value="নিজস্ব প্রতিবেদক" maxlength="40">
       </div>
 
       <div class="field">
-        <label for="brand">৪. পেজের নাম (কার্ডের ওপরে বাঁ দিকে বসবে)</label>
+        <label for="brand">পেজের নাম (কার্ডের ওপরে বাঁ দিকে বসবে)</label>
         <input type="text" id="brand" value="Afterthought" maxlength="30">
       </div>
 
@@ -202,12 +210,12 @@ button.primary:hover { filter: brightness(1.08); }
       </div>
 
       <div class="field">
-        <span class="lbl">৫. কার্ডের রং</span>
+        <span class="lbl">কার্ডের রং</span>
         <div class="swatches" id="swatches"></div>
       </div>
 
       <div class="field">
-        <span class="lbl">৬. লেখার রং</span>
+        <span class="lbl">লেখার রং</span>
         <div class="colors">
           <label class="color" for="cHead"><input type="color" id="cHead" value="#ffffff"><span>শিরোনাম</span></label>
           <label class="color" for="cSrcText"><input type="color" id="cSrcText" value="#0f6a37"><span>সূত্রের লেখা</span></label>
@@ -215,6 +223,7 @@ button.primary:hover { filter: brightness(1.08); }
           <label class="color" for="cFoot"><input type="color" id="cFoot" value="#ffffff"><span>নাম, তারিখ ও ছোট লেখা</span></label>
         </div>
         <button type="button" class="ghost" id="resetColors">রং আগের মতো করুন</button>
+      </div>
       </div>
     </section>
 
@@ -639,6 +648,16 @@ button.primary:hover { filter: brightness(1.08); }
       ]).then(schedule, schedule);
     } else { schedule(); }
   }
+  // extra options (source, name, credit, bottom note, border, colours) open from the "আরও অপশন" button
+  function setMore(on) {
+    $("moreFields").hidden = !on;
+    $("moreBtn").setAttribute("aria-expanded", on ? "true" : "false");
+    $("moreBtn").textContent = on ? "অপশন লুকান ▴" : "আরও অপশন দেখান ▾";
+  }
+  $("moreBtn").addEventListener("click", function () { setMore($("moreFields").hidden); });
+  function applyAdmin() { if (location.hash === "#admin") setMore(true); }
+  window.addEventListener("hashchange", applyAdmin);
+  applyAdmin();
   schedule();
   ready();
 })();
