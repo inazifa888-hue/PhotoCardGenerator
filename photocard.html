@@ -89,6 +89,13 @@ input:focus-visible, textarea:focus-visible, button:focus-visible, .file:focus-w
 .color span { min-width: 0; overflow-wrap: anywhere; }
 button.ghost { font: inherit; font-size: 14.5px; cursor: pointer; align-self: flex-start; background: none; color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 7px 14px; }
 button.ghost:hover { border-color: var(--fg); }
+select { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 9px 12px; }
+select:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.sizebar { display: flex; align-items: center; gap: 12px; }
+.sizebar input { flex: 1; min-width: 0; accent-color: var(--accent); }
+.sizebar .count { align-self: auto; min-width: 5.5em; text-align: right; }
+.chk { display: flex; align-items: center; gap: 8px; font-size: 14.5px; cursor: pointer; }
+.chk input { width: 18px; height: 18px; accent-color: var(--accent); }
 .tint { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .tint .color { min-width: 0; }
 code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12.5px; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
@@ -134,6 +141,20 @@ button.primary:hover { filter: brightness(1.08); }
       </div>
 
       <div class="field">
+        <span class="lbl">ছবির বর্ডার (ঐচ্ছিক)</span>
+        <div class="tint">
+          <select id="bw" aria-label="বর্ডারের মোটা-পাতলা">
+            <option value="0">বর্ডার নেই</option>
+            <option value="10">পাতলা</option>
+            <option value="20" selected>মাঝারি</option>
+            <option value="32">মোটা</option>
+          </select>
+          <label class="color" for="bc"><input type="color" id="bc" value="#ffffff"><span>বর্ডারের রং</span></label>
+        </div>
+        <p class="hint">ছবির চারপাশে এই রঙের ফ্রেম বসবে, ছবি থাকবে মাঝখানে। রং না বদলালে কার্ডের থিমের সঙ্গে মিলে যাবে।</p>
+      </div>
+
+      <div class="field">
         <label for="headline">২. সংবাদ শিরোনাম</label>
         <textarea id="headline" maxlength="500">নদীভাঙনে বিলীন হওয়ার পথে [[#ffd60a|তিন গ্রাম]], বাঁধ নির্মাণের দাবিতে মানববন্ধন</textarea>
         <span class="count" id="count"></span>
@@ -146,18 +167,38 @@ button.primary:hover { filter: brightness(1.08); }
       </div>
 
       <div class="field">
+        <label for="sizeRange">শিরোনামের আকার</label>
+        <div class="sizebar">
+          <input type="range" id="sizeRange" min="30" max="110" step="2" value="76">
+          <span class="count" id="sizeVal"></span>
+        </div>
+        <label class="chk" for="autoSize"><input type="checkbox" id="autoSize" checked> জায়গা অনুযায়ী নিজে ঠিক হোক (স্বয়ংক্রিয়)</label>
+        <p class="hint" id="sizeMsg">স্লাইডার টানলে স্বয়ংক্রিয় বন্ধ হয়ে আপনার পছন্দের আকার বসবে।</p>
+      </div>
+
+      <div class="field">
+        <label for="sub">শিরোনামের নিচের ছোট লেখা (ঐচ্ছিক)</label>
+        <textarea id="sub" maxlength="140" style="min-height: 64px" placeholder="দরকার হলে এখানে এক-দুই লাইনের ছোট লেখা দিন"></textarea>
+      </div>
+
+      <div class="field">
         <label for="source">৩. সূত্র বা প্রতিবেদকের নাম</label>
         <input type="text" id="source" value="নিজস্ব প্রতিবেদক" maxlength="40">
       </div>
 
       <div class="field">
-        <label for="brand">৪. পেজের নাম (কার্ডের নিচে বাঁ দিকে বসবে)</label>
+        <label for="brand">৪. পেজের নাম (কার্ডের ওপরে বাঁ দিকে বসবে)</label>
         <input type="text" id="brand" value="Afterthought" maxlength="30">
       </div>
 
       <div class="field">
-        <label for="note">নিচের ডান পাশের লেখা (ঐচ্ছিক)</label>
+        <label for="note">নিচের মাঝের লেখা (ঐচ্ছিক, পাশে নিচমুখী তীর বসবে)</label>
         <input type="text" id="note" value="বিস্তারিত কমেন্টে" maxlength="40">
+      </div>
+
+      <div class="field">
+        <label for="credit">ওপরের ডান পাশের লেখা (ঐচ্ছিক)</label>
+        <input type="text" id="credit" value="ছবি সংগৃহীত" maxlength="30">
       </div>
 
       <div class="field">
@@ -171,7 +212,7 @@ button.primary:hover { filter: brightness(1.08); }
           <label class="color" for="cHead"><input type="color" id="cHead" value="#ffffff"><span>শিরোনাম</span></label>
           <label class="color" for="cSrcText"><input type="color" id="cSrcText" value="#0f6a37"><span>সূত্রের লেখা</span></label>
           <label class="color" for="cSrcBg"><input type="color" id="cSrcBg" value="#ffffff"><span>সূত্রের ট্যাগ</span></label>
-          <label class="color" for="cFoot"><input type="color" id="cFoot" value="#ffffff"><span>নাম ও তারিখ</span></label>
+          <label class="color" for="cFoot"><input type="color" id="cFoot" value="#ffffff"><span>নাম, তারিখ ও ছোট লেখা</span></label>
         </div>
         <button type="button" class="ghost" id="resetColors">রং আগের মতো করুন</button>
       </div>
@@ -274,7 +315,7 @@ button.primary:hover { filter: brightness(1.08); }
     });
   });
 
-  ["headline", "source", "brand", "note"].forEach(function (id) { $(id).addEventListener("input", schedule); });
+  ["headline", "source", "brand", "note", "credit", "bw", "bc", "sub", "autoSize", "sizeRange"].forEach(function (id) { $(id).addEventListener("input", schedule); $(id).addEventListener("change", schedule); });
 
   // text colors: untouched pickers follow the theme, touched ones keep the viewer's choice
   var touched = {};
@@ -287,6 +328,8 @@ button.primary:hover { filter: brightness(1.08); }
     Object.keys(COLOR_DEFAULTS).forEach(function (id) { $(id).value = COLOR_DEFAULTS[id]; });
     schedule();
   });
+  $("bc").addEventListener("input", function () { touched.bc = true; });
+  $("sizeRange").addEventListener("input", function () { $("autoSize").checked = false; });
   function col(id, fallback) { return touched[id] ? $(id).value : fallback; }
 
   // headline colour markup: [[#rrggbb|text]]
@@ -410,10 +453,12 @@ button.primary:hover { filter: brightness(1.08); }
     var src = $("source").value.trim();
     var brand = $("brand").value.trim();
 
+    if (!touched.bc) $("bc").value = t.band;
+    var bwid = parseInt($("bw").value, 10) || 0, bcol = $("bc").value;
     ctx.clearRect(0, 0, S, S);
     // photo area: 1-6 photos in a tiled layout
     if (imgs.length) {
-      ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, S, PHOTO_H);
+      ctx.fillStyle = bwid ? bcol : "#ffffff"; ctx.fillRect(0, 0, S, PHOTO_H);
       photoLayout(imgs.length).forEach(function (r, i) { cover(imgs[i], r[0], r[1], r[2], r[3]); });
     } else {
       placeholder(0, 0, S, PHOTO_H, "এখানে আপনার ছবি বসবে");
@@ -422,6 +467,14 @@ button.primary:hover { filter: brightness(1.08); }
     var fg = ctx.createLinearGradient(0, 380, 0, BAND_Y);
     fg.addColorStop(0, "rgba(0,0,0,0)"); fg.addColorStop(1, "rgba(0,0,0,.55)");
     ctx.fillStyle = fg; ctx.fillRect(0, 380, S, BAND_Y - 380);
+    if (bwid) {   // coloured frame on all four sides, photo sits in the middle
+      var ix = bwid, iy = bwid, iw = S - 2 * bwid, ih = PHOTO_H - 2 * bwid, rr = 18;
+      ctx.fillStyle = bcol; ctx.beginPath(); ctx.rect(0, 0, S, PHOTO_H);
+      ctx.moveTo(ix + rr, iy);
+      ctx.arcTo(ix + iw, iy, ix + iw, iy + ih, rr); ctx.arcTo(ix + iw, iy + ih, ix, iy + ih, rr);
+      ctx.arcTo(ix, iy + ih, ix, iy, rr); ctx.arcTo(ix, iy, ix + iw, iy, rr);
+      ctx.closePath(); ctx.fill("evenodd");
+    }
 
     // band
     var bg = ctx.createLinearGradient(0, BAND_Y, 0, S);
@@ -429,36 +482,82 @@ button.primary:hover { filter: brightness(1.08); }
     ctx.fillStyle = bg; ctx.fillRect(0, BAND_Y, S, S - BAND_Y);
     ctx.fillStyle = "#ffffff"; ctx.fillRect(0, BAND_Y, S, 6);
 
-    // brand chip (top-left)
-    ctx.textBaseline = "alphabetic"; ctx.textAlign = "left";
-    if (LOGO.complete && LOGO.naturalWidth) {
+    // top corners: name (left) and credit (right) on light translucent shapes
+    ctx.textBaseline = "middle"; ctx.textAlign = "left";
+    var wm = col("cFoot", "#ffffff"), CHIP = "rgba(0,0,0,.26)";
+    if (brand) {
+      ctx.font = "800 36px 'Anek Bangla', sans-serif";
+      var bw = ctx.measureText(brand).width + 40;
+      ctx.fillStyle = CHIP; rrect(40, 40, bw, 56, 12); ctx.fill();
+      var tw0 = bw - 40;
+      var ng = ctx.createLinearGradient(60, 0, 60 + tw0, 0);   // deep red -> green
+      ng.addColorStop(0, "#a30d22"); ng.addColorStop(0.42, "#c4152e");
+      ng.addColorStop(0.58, "#0c8f48"); ng.addColorStop(1, "#066a35");
       ctx.save();
-      ctx.shadowColor = "rgba(0,0,0,.35)"; ctx.shadowBlur = 18; ctx.shadowOffsetY = 4;
-      ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(90, 90, 54, 0, Math.PI * 2); ctx.fill();
+      ctx.lineJoin = "round"; ctx.lineWidth = 7; ctx.strokeStyle = "rgba(255,255,255,.95)";
+      ctx.strokeText(brand, 60, 69);                              // white edge keeps dark colours readable
+      ctx.fillStyle = touched.cFoot ? wm : ng; ctx.fillText(brand, 60, 69);
       ctx.restore();
-      ctx.drawImage(LOGO, 40, 40, 100, 100);
+    }
+    var credit = $("credit").value.trim();
+    if (credit) {
+      ctx.font = "400 26px 'Tiro Bangla', 'Hind Siliguri', serif";
+      var cw = ctx.measureText(credit).width + 36;
+      ctx.fillStyle = CHIP; rrect(S - 40 - cw, 44, cw, 48, 24); ctx.fill();
+      ctx.fillStyle = wm; ctx.globalAlpha = 0.95; ctx.fillText(credit, S - 40 - cw + 18, 69); ctx.globalAlpha = 1;
+    }
+    ctx.textBaseline = "alphabetic";
+
+    // source pill straddling the band edge (small, kept clear of the logo)
+    if (src) {
+      var label = "সূত্র: " + src, fs = 24, maxPw = S / 2 - 54 - 24 - 60;
+      do { ctx.font = "600 " + fs + "px 'Hind Siliguri', sans-serif"; fs -= 1; }
+      while (ctx.measureText(label).width + 36 > maxPw && fs > 14);
+      var pw = Math.min(ctx.measureText(label).width + 36, maxPw);
+      ctx.fillStyle = col("cSrcBg", "#ffffff"); rrect(60, BAND_Y - 23, pw, 46, 23); ctx.fill();
+      ctx.fillStyle = col("cSrcText", t.band);
+      ctx.save(); ctx.beginPath(); ctx.rect(60, BAND_Y - 23, pw, 46); ctx.clip();
+      ctx.fillText(label, 78, BAND_Y + 8); ctx.restore();
     }
 
-    // source pill straddling the band edge
-    if (src) {
-      var label = "সূত্র: " + src;
-      ctx.font = "600 32px 'Hind Siliguri', sans-serif";
-      var pw = Math.min(ctx.measureText(label).width + 48, S - 120);
-      ctx.fillStyle = col("cSrcBg", "#ffffff"); rrect(60, BAND_Y - 31, pw, 62, 31); ctx.fill();
-      ctx.fillStyle = col("cSrcText", t.band);
-      ctx.save(); ctx.beginPath(); ctx.rect(60, BAND_Y - 31, pw, 62); ctx.clip();
-      ctx.fillText(label, 84, BAND_Y + 11); ctx.restore();
+    // logo centred on the white line above the headline
+    if (LOGO.complete && LOGO.naturalWidth) {
+      var ly = BAND_Y + 3;
+      ctx.save();
+      ctx.shadowColor = "rgba(0,0,0,.35)"; ctx.shadowBlur = 18; ctx.shadowOffsetY = 4;
+      ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(S / 2, ly, 54, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+      ctx.drawImage(LOGO, S / 2 - 50, ly - 50, 100, 100);
     }
 
     // headline, auto-sized to fit
     var X = 60, W = S - 120, top = BAND_Y + 70, maxH = 300, size = 76, lines, lh;
     var words = toWords(parseRuns(head));
-    for (; size >= 34; size -= 2) {
+    var sub = $("sub").value.trim(), subLines = [], subLH = 42;
+    if (sub) {
+      ctx.font = "500 32px 'Hind Siliguri', sans-serif";
+      subLines = wrapWords(toWords([{ t: sub, c: null }]), W).slice(0, 2);
+    }
+    var availH = maxH - (subLines.length ? subLines.length * subLH + 14 : 0);
+    var auto = $("autoSize").checked, manual = parseInt($("sizeRange").value, 10) || 76;
+    if (auto) {
+      for (; size >= 30; size -= 2) {
+        ctx.font = "800 " + size + "px 'Anek Bangla', sans-serif";
+        lh = Math.round(size * 1.3);
+        lines = wrapWords(words, W);
+        if (lines.length * lh <= availH) break;
+      }
+      $("sizeRange").value = size;
+    } else {
+      size = manual;
       ctx.font = "800 " + size + "px 'Anek Bangla', sans-serif";
       lh = Math.round(size * 1.3);
       lines = wrapWords(words, W);
-      if (lines.length * lh <= maxH) break;
     }
+    $("sizeVal").textContent = bn(size) + " পিক্সেল";
+    $("sizeMsg").textContent = (!auto && lines.length * lh > availH)
+      ? "লেখা বড় হয়ে কার্ডের নিচের অংশে চলে যাচ্ছে, আকার একটু কমান।"
+      : "স্লাইডার টানলে স্বয়ংক্রিয় বন্ধ হয়ে আপনার পছন্দের আকার বসবে।";
     var base = col("cHead", "#ffffff"), spW = ctx.measureText(" ").width;
     lines.forEach(function (ln, i) {
       var x = X, y = top + size + i * lh - 6;
@@ -469,27 +568,34 @@ button.primary:hover { filter: brightness(1.08); }
         x += spW;
       });
     });
+    if (subLines.length) {
+      var yLast = top + size + (lines.length - 1) * lh - 6;
+      ctx.font = "500 32px 'Hind Siliguri', sans-serif";
+      ctx.fillStyle = base; ctx.globalAlpha = 0.9;
+      subLines.forEach(function (ln, i) {
+        ctx.fillText(ln.map(function (w) { return w.map(function (r) { return r.t; }).join(""); }).join(" "), X, yLast + 50 + i * subLH);
+      });
+      ctx.globalAlpha = 1;
+    }
 
-    // footer: date
+    // footer: centred note with a down arrow, date at the right
     var d = "";
     try { d = new Date().toLocaleDateString("bn-BD", { day: "numeric", month: "long", year: "numeric" }); } catch (e) {}
     ctx.fillStyle = "rgba(255,255,255,.18)"; ctx.fillRect(60, S - 62, S - 120, 2);
+    var fc = col("cFoot", "#ffffff");
     var note = $("note").value.trim();
     if (note) {
-      ctx.fillStyle = col("cFoot", "#ffffff");
-      ctx.font = "400 34px 'Tiro Bangla', 'Hind Siliguri', serif";
-      ctx.textAlign = "right"; ctx.fillText(note, S - 60, S - 22); ctx.textAlign = "left";
+      ctx.fillStyle = fc; ctx.font = "400 34px 'Tiro Bangla', 'Hind Siliguri', serif";
+      var tw = ctx.measureText(note).width, total = tw + 16 + 26, x0 = (S - total) / 2;
+      ctx.fillText(note, x0, S - 22);
+      var ax = x0 + tw + 16 + 13, y1 = S - 54, y2 = S - 20;
+      ctx.strokeStyle = fc; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.lineJoin = "round";
+      ctx.beginPath(); ctx.moveTo(ax, y1); ctx.lineTo(ax, y2);
+      ctx.moveTo(ax - 10, y2 - 12); ctx.lineTo(ax, y2); ctx.lineTo(ax + 10, y2 - 12); ctx.stroke();
     }
-    ctx.fillStyle = col("cFoot", "#ffffff"); ctx.font = "400 26px 'Tiro Bangla', 'Hind Siliguri', serif";
     if (d) {
-      var dw = ctx.measureText(d).width + 36;
-      ctx.fillStyle = "rgba(0,0,0,.55)"; rrect(S - 40 - dw, 40, dw, 48, 24); ctx.fill();
-      ctx.fillStyle = col("cFoot", "#ffffff");
-      ctx.textBaseline = "middle"; ctx.fillText(d, S - 40 - dw + 18, 65); ctx.textBaseline = "alphabetic";
-    }
-    if (brand) {
-      ctx.fillStyle = col("cFoot", "#ffffff"); ctx.font = "800 46px 'Anek Bangla', sans-serif";
-      ctx.fillText(brand, 60, S - 22);
+      ctx.fillStyle = fc; ctx.font = "400 30px 'Tiro Bangla', 'Hind Siliguri', serif";
+      ctx.textAlign = "right"; ctx.fillText(d, S - 60, S - 22); ctx.textAlign = "left";
     }
 
     try { out.src = cv.toDataURL("image/png"); } catch (e) { $("msg").textContent = "ছবি তৈরি করা যায়নি। অন্য একটি ছবি দিয়ে চেষ্টা করুন।"; }
