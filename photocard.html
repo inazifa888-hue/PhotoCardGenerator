@@ -245,7 +245,7 @@ button.primary:hover { filter: brightness(1.08); }
 
       <div class="field">
         <label for="source">সূত্র বা প্রতিবেদকের নাম</label>
-        <input type="text" id="source" value="নিজস্ব প্রতিবেদক" maxlength="40">
+        <input type="text" id="source" value="আপডেট নিউজ" maxlength="40">
       </div>
 
       <div class="field">
@@ -511,6 +511,11 @@ button.primary:hover { filter: brightness(1.08); }
   tintHandlers("sub", "cTintSub", "applyTintSub", "clearTintSub", "tintMsgSub");
 
   // draws one wrapped line of coloured runs; returns nothing
+  function lineWidth(ln) {
+    var sp = ctx.measureText(" ").width, t = 0;
+    ln.forEach(function (w, i) { w.forEach(function (r) { t += ctx.measureText(r.t).width; }); if (i) t += sp; });
+    return t;
+  }
   function drawRunLine(ln, x, y, base, fix) {
     var sp = ctx.measureText(" ").width;
     ln.forEach(function (w) {
@@ -876,7 +881,7 @@ button.primary:hover { filter: brightness(1.08); }
     }
     var base = col("cHead", headDef), spW = ctx.measureText(" ").width;
     lines.forEach(function (ln, i) {
-      var x = X, y = (above ? top + subBlock : top) + size + i * lh - 6;
+      var x = X + (W - lineWidth(ln)) / 2, y = (above ? top + subBlock : top) + size + i * lh - 6;
       ln.forEach(function (w) {
         w.forEach(function (r) {
           ctx.fillStyle = r.c ? readable(r.c) : base; ctx.fillText(r.t, x, y); x += ctx.measureText(r.t).width;
@@ -889,7 +894,7 @@ button.primary:hover { filter: brightness(1.08); }
       var sy = (above ? top + 34 : yLast + 50) + subOff;
       ctx.font = subFont(34);
       ctx.fillStyle = base; ctx.globalAlpha = 0.95;
-      subLines.forEach(function (ln, i) { drawRunLine(ln, X, sy + i * subLH, base, readable); });
+      subLines.forEach(function (ln, i) { ctx.font = subFont(34); drawRunLine(ln, X + (W - lineWidth(ln)) / 2, sy + i * subLH, base, readable); });
       ctx.globalAlpha = 1;
     }
 
