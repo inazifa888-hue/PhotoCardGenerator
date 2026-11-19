@@ -235,7 +235,7 @@ input::placeholder{color:#9aa6c9;opacity:1}
   function toLat(s){return String(s).replace(/[০-৯]/g,function(d){return BN.indexOf(d)}).replace(/,/g,'')}
   function num(s){var v=parseFloat(toLat(s).replace(/[^\d.\-]/g,''));return isFinite(v)?v:0}
   var nf;try{nf=new Intl.NumberFormat('bn-BD',{maximumFractionDigits:2})}catch(e){nf=null}
-  function fmt(n){n=Math.round(n*100)/100;return nf?nf.format(n):toBn(n)}
+  function fmt(n){n=Math.round(n*100)/100;var neg=n<0;n=Math.abs(n);var p=String(n).split('.'),i=p[0],l=i.slice(-3),r=i.slice(0,-3);if(r)r=r.replace(/\B(?=(\d{2})+(?!\d))/g,',')+',';return (neg?'-':'')+toBn(r+l+(p[1]?'.'+p[1]:''))}
   function store(k,v){try{localStorage.setItem(k,v)}catch(e){}}
   function load(k){try{return localStorage.getItem(k)}catch(e){return null}}
 
@@ -308,6 +308,7 @@ input::placeholder{color:#9aa6c9;opacity:1}
 
   function signSync(){return;var v=$('shopOwner').value.replace(/^\s*প্রোঃ\s*/,'').trim();$('signName').textContent=v}
   $('shopOwner').addEventListener('input',signSync);signSync();
+  document.addEventListener('input',function(e){var t=e.target;if(t&&t.matches&&t.matches('input.n,#disc,#paid')&&/[0-9]/.test(t.value)){var c=t.selectionStart;t.value=toBn(t.value);try{t.setSelectionRange(c,c)}catch(_){}}},true);
   document.addEventListener('input',calc);
   rowsEl.addEventListener('click',function(e){
     var b=e.target.closest('.x');if(!b)return;
