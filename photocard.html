@@ -153,12 +153,13 @@ button.primary:hover { filter: brightness(1.08); }
         </label>
         <div class="thumbs" id="thumbs"></div>
         <button type="button" class="ghost" id="clearPhotos" hidden>সব ছবি সরান</button>
+        <label class="chk" style="margin-top:8px"><input type="checkbox" id="autoFit" checked> ছবি নিজে থেকে সুন্দর করে বসান (অটো)</label>
         <div class="pos" id="posBox" hidden>
           <span class="lbl" id="posTitle">ছবির অবস্থান ঠিক করুন</span>
           <div class="row"><span class="k">বড়-ছোট</span><input type="range" id="pz" min="100" max="300" step="5" value="100"></div>
           <div class="row"><span class="k">ডান-বাম</span><input type="range" id="px" min="0" max="100" step="1" value="50"></div>
           <div class="row"><span class="k">উপর-নিচ</span><input type="range" id="py" min="0" max="100" step="1" value="50"></div>
-          <button type="button" class="ghost" id="posReset" style="margin-top:8px">এই ছবি মাঝখানে ফেরান</button>
+          <button type="button" class="ghost" id="posReset" style="margin-top:8px">এই ছবি আবার অটো করুন</button>
           <p class="hint">ছবির নম্বরে চাপ দিলে সেই ছবির অবস্থান বদলানো যাবে।</p>
         </div>
         <p class="hint" id="photoMsg" role="status"></p>
@@ -167,7 +168,7 @@ button.primary:hover { filter: brightness(1.08); }
 
       <div class="field">
         <label for="headline">সংবাদ শিরোনাম</label>
-        <textarea id="headline" maxlength="500">নদীভাঙনে বিলীন হওয়ার পথে [[#ffd60a|তিন গ্রাম]], বাঁধ নির্মাণের দাবিতে মানববন্ধন</textarea>
+        <textarea id="headline" maxlength="500" placeholder="এখানে সংবাদ শিরোনাম লিখুন"></textarea>
         <span class="count" id="count"></span>
         <div class="tint">
           <label class="color" for="cTint"><input type="color" id="cTint" value="#ffd60a"><span>নির্বাচিত অংশের রং</span></label>
@@ -347,9 +348,10 @@ button.primary:hover { filter: brightness(1.08); }
     im._z = (parseInt($("pz").value, 10) || 100) / 100;
     im._x = (parseInt($("px").value, 10) || 0) / 100;
     im._y = (parseInt($("py").value, 10) || 0) / 100;
+    im._manual = true;
   }
   ["pz", "px", "py"].forEach(function (id) { $(id).addEventListener("input", readPos); });
-  $("posReset").addEventListener("click", function () { var im = imgs[selIdx]; if (im) { im._z = 1; im._x = 0.5; im._y = 0.5; syncPos(); schedule(); } });
+  $("posReset").addEventListener("click", function () { var im = imgs[selIdx]; if (im) { im._z = 1; im._x = 0.5; im._y = 0.5; im._manual = false; syncPos(); schedule(); } });
   function renderThumbs() {
     if (selIdx >= imgs.length) selIdx = Math.max(0, imgs.length - 1);
     var box = $("thumbs"); box.innerHTML = "";
@@ -404,7 +406,7 @@ button.primary:hover { filter: brightness(1.08); }
     });
   });
 
-  ["pz", "px", "py", "subOff", "headline", "source", "brand", "note", "credit", "bw", "bc", "sub", "autoSize", "sizeRange"].forEach(function (id) { $(id).addEventListener("input", schedule); $(id).addEventListener("change", schedule); });
+  ["autoFit", "pz", "px", "py", "subOff", "headline", "source", "brand", "note", "credit", "bw", "bc", "sub", "autoSize", "sizeRange"].forEach(function (id) { $(id).addEventListener("input", schedule); $(id).addEventListener("change", schedule); });
   document.querySelectorAll('input[name="subpos"]').forEach(function (r) { r.addEventListener("change", schedule); });
 
   // text colors: untouched pickers follow the theme, touched ones keep the viewer's choice
@@ -544,14 +546,66 @@ button.primary:hover { filter: brightness(1.08); }
     return out;
   }
 
+  // finds where the interesting part of a photo is (contrast, colour, skin tones, centre-weighted)
+  function focusOf(im) {
+    if (im._fx != null) return;
+    var W0 = 48, H0 = Math.max(8, Math.round(48 * im.height / im.width));
+    if (H0 > 96) H0 = 96;
+    var c = document.createElement("canvas"); c.width = W0; c.height = H0;
+    var g = c.getContext("2d"), px;
+    try { g.drawImage(im, 0, 0, W0, H0); px = g.getImageData(0, 0, W0, H0).data; } catch (e) { im._fx = 0.5; im._fy = 0.4; return; }
+    var lum = new Float32Array(W0 * H0), i, x, y;
+    for (i = 0; i < W0 * H0; i++) lum[i] = 0.299 * px[i * 4] + 0.587 * px[i * 4 + 1] + 0.114 * px[i * 4 + 2];
+    var sw = 0, sx = 0, sy = 0;
+    for (y = 1; y < H0 - 1; y++) for (x = 1; x < W0 - 1; x++) {
+      i = y * W0 + x;
+      var gx = lum[i + 1] - lum[i - 1], gy = lum[i + W0] - lum[i - W0];
+      var r = px[i * 4], gg = px[i * 4 + 1], b = px[i * 4 + 2];
+      var sat = Math.max(r, gg, b) - Math.min(r, gg, b);
+      var skin = (r > 95 && gg > 40 && b > 20 && r > gg && r > b && r - gg > 15 && r - b > 20 && r < 250) ? 40 : 0;
+      var dx = (x / W0 - 0.5) / 0.55, dy = (y / H0 - 0.45) / 0.55;
+      var w = (Math.sqrt(gx * gx + gy * gy) + sat * 0.35 + skin) * Math.exp(-(dx * dx + dy * dy));
+      w = w * w;
+      sw += w; sx += w * x; sy += w * y;
+    }
+    im._fx = sw > 0 ? sx / sw / W0 : 0.5;
+    im._fy = sw > 0 ? sy / sw / H0 : 0.4;
+  }
+  var curCy = 0.5;   // where in the frame the subject should sit (the overlay lifts it above the headline)
   function cover(im, x, y, w, h) {
-    var s = Math.max(w / im.width, h / im.height) * (im._z || 1);
-    var dw = im.width * s, dh = im.height * s;
-    var fx = im._x == null ? 0.5 : im._x, fy = im._y == null ? 0.5 : im._y;
+    var auto = $("autoFit").checked && !im._manual;
     ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
-    ctx.drawImage(im, x + (w - dw) * fx, y + (h - dh) * fy, dw, dh);
+    if (!auto) {
+      var s0 = Math.max(w / im.width, h / im.height) * (im._z || 1);
+      var dw0 = im.width * s0, dh0 = im.height * s0;
+      var fx0 = im._x == null ? 0.5 : im._x, fy0 = im._y == null ? 0.5 : im._y;
+      ctx.drawImage(im, x + (w - dw0) * fx0, y + (h - dh0) * fy0, dw0, dh0);
+      ctx.restore(); return;
+    }
+    focusOf(im);
+    var ar = im.width / im.height, br = w / h, keep = Math.min(ar / br, br / ar);
+    if (keep < 0.6) {
+      // the photo would lose too much when cropped: show it whole over a soft blurred copy of itself
+      var sm = document.createElement("canvas"); sm.width = 18; sm.height = Math.max(6, Math.round(18 * h / w));
+      var sg = sm.getContext("2d"); sg.imageSmoothingQuality = "high";
+      var sb = Math.max(sm.width / im.width, sm.height / im.height);
+      sg.drawImage(im, (sm.width - im.width * sb) / 2, (sm.height - im.height * sb) / 2, im.width * sb, im.height * sb);
+      ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(sm, x, y, w, h);
+      ctx.fillStyle = "rgba(0,0,0,.28)"; ctx.fillRect(x, y, w, h);
+      var sf = Math.min(w / im.width, h / im.height), fw = im.width * sf, fh = im.height * sf;
+      var fy = Math.max(y, Math.min(y + h - fh, y + curCy * h - fh / 2));
+      ctx.shadowColor = "rgba(0,0,0,.45)"; ctx.shadowBlur = 24;
+      ctx.drawImage(im, x + (w - fw) / 2, fy, fw, fh);
+    } else {
+      var s = Math.max(w / im.width, h / im.height), dw = im.width * s, dh = im.height * s;
+      var left = Math.max(w - dw, Math.min(0, w / 2 - im._fx * dw));
+      var top = Math.max(h - dh, Math.min(0, h * curCy - im._fy * dh));
+      ctx.drawImage(im, x + left, y + top, dw, dh);
+    }
     ctx.restore();
   }
+
 
   function placeholder(x, y, w, h, label) {
     var g = ctx.createLinearGradient(x, y, x + w, y + h);
@@ -607,6 +661,7 @@ button.primary:hover { filter: brightness(1.08); }
   // Overlay template: full photo, dark fade, tag + big headline, wordmark and date, coloured bar at the bottom (1080 x 1350)
   function drawOverlay(t, head, src, brand) {
     var H = 1350, BAR = 92, barY = H - BAR;
+    curCy = 0.36;
     var accent = t.band;
     ctx.clearRect(0, 0, S, H);
     if (imgs.length) {
@@ -627,11 +682,22 @@ button.primary:hover { filter: brightness(1.08); }
     var base = col("cHead", "#ffffff"), fc = col("cFoot", "#ffffff");
     ctx.textBaseline = "alphabetic"; ctx.textAlign = "left";
 
-    // logo (top left) and photo credit (top right, plain text)
-    if (LOGO.complete && LOGO.naturalWidth) {
-      ctx.save(); ctx.shadowColor = "rgba(0,0,0,.4)"; ctx.shadowBlur = 16; ctx.shadowOffsetY = 3;
-      ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(92, 92, 52, 0, Math.PI * 2); ctx.fill(); ctx.restore();
-      ctx.drawImage(LOGO, 42, 42, 100, 100);
+    // page name (top left, same look as the green frame) and photo credit (top right, plain text)
+    if (brand) {
+      var o = 48;
+      ctx.textBaseline = "middle";
+      ctx.font = "800 36px 'Anek Bangla', sans-serif";
+      var bw = ctx.measureText(brand).width + 40, tw0 = bw - 40;
+      ctx.fillStyle = "rgba(0,0,0,.26)"; rrect(o, o, bw, 56, 12); ctx.fill();
+      var ng = ctx.createLinearGradient(o + 20, 0, o + 20 + tw0, 0);
+      ng.addColorStop(0, "#a30d22"); ng.addColorStop(0.42, "#c4152e");
+      ng.addColorStop(0.58, "#0c8f48"); ng.addColorStop(1, "#066a35");
+      ctx.save();
+      ctx.lineJoin = "round"; ctx.lineWidth = 7; ctx.strokeStyle = "rgba(255,255,255,.95)";
+      ctx.strokeText(brand, o + 20, o + 29);
+      ctx.fillStyle = touched.cFoot ? fc : ng; ctx.fillText(brand, o + 20, o + 29);
+      ctx.restore();
+      ctx.textBaseline = "alphabetic";
     }
     var credit = $("credit").value.trim();
     if (credit) {
@@ -666,7 +732,7 @@ button.primary:hover { filter: brightness(1.08); }
     var headTop = blockBottom - (above ? 0 : subH) - lines.length * lh;
 
     // source chip above the headline
-    var chipText = src ? "সূত্র: " + src : "";
+    var chipText = src;
     if (chipText) {
       ctx.font = "600 34px 'Hind Siliguri', sans-serif";
       var cwid = Math.min(ctx.measureText(chipText).width + 56, W), cy0 = headTop - (above ? subH : 0) - 62;
@@ -717,6 +783,7 @@ button.primary:hover { filter: brightness(1.08); }
   }
 
   function draw() {
+    curCy = 0.5;
     var t = theme();
     var tpl = (document.querySelector('input[name="tpl"]:checked') || { value: "overlay" }).value;
     var isFrame = tpl === "frame" || tpl === "gframe", lightFrame = tpl === "frame";
@@ -823,7 +890,7 @@ button.primary:hover { filter: brightness(1.08); }
 
     // source pill straddling the band edge (small, kept clear of the logo)
     if (src) {
-      var label = "সূত্র: " + src, fs = 24, maxPw = S / 2 - 54 - 24 - 60;
+      var label = src, fs = 24, maxPw = S / 2 - 54 - 24 - 60;
       do { ctx.font = "600 " + fs + "px 'Hind Siliguri', sans-serif"; fs -= 1; }
       while (ctx.measureText(label).width + 36 > maxPw && fs > 14);
       var pw = Math.min(ctx.measureText(label).width + 36, maxPw);
