@@ -140,6 +140,106 @@ button.primary:hover { filter: brightness(1.08); }
 .note { font-size: 13.5px; color: var(--muted); margin: 0; }
 #msg { min-height: 1.5em; font-size: 14px; color: var(--fg); margin: 0; }
 @media (prefers-reduced-motion: no-preference) { button.primary { transition: filter .15s; } }
+
+/* compact sizes: smaller text and tighter spacing */
+body { font-size: 13.5px; line-height: 1.4; padding-block: 14px 24px; }
+header h1 { font-size: clamp(20px, 4vw, 26px); margin-bottom: 0; }
+.grid { gap: 16px; margin-top: 12px; }
+.panel { padding: 12px; gap: 10px; border-radius: 8px; }
+.field { gap: 5px; }
+.field > label, .field > .lbl { font-size: 13px; }
+.hint, .count, .vbar span, #msg { font-size: 12px; }
+input[type="text"], textarea { padding: 6px 9px; font-size: 13.5px; border-radius: 5px; }
+textarea { min-height: 62px; }
+.file { padding: 8px 10px; gap: 8px; }
+.file .btn-like { padding: 5px 11px; font-size: 13px; }
+.file .names { font-size: 12.5px; }
+.thumb, .vthumb { width: 56px; height: 56px; }
+.swatch span { padding: 4px 10px 4px 5px; font-size: 13px; gap: 6px; }
+.swatch i { width: 18px; height: 18px; }
+.tpls .swatch span { padding: 5px 12px; }
+.swatches { gap: 6px; }
+.colors { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 6px; }
+.color { font-size: 12.5px; padding: 4px 8px 4px 4px; gap: 7px; }
+.color input { width: 28px; height: 28px; }
+button.ghost { font-size: 12.5px; padding: 5px 10px; }
+select { padding: 6px 9px; font-size: 13px; }
+.chk { font-size: 13px; gap: 6px; }
+.chk input { width: 15px; height: 15px; }
+.more { padding-top: 10px; gap: 5px; }
+.more-fields { gap: 10px; }
+.pos { padding: 7px 9px; margin-top: 6px; }
+.pos .row span.k { width: 70px; font-size: 12px; }
+.tint .color input { width: 26px; height: 26px; }
+.tint button.ghost { padding: 3px 8px; font-size: 12px; }
+button.primary { padding: 8px 16px; font-size: 14px; }
+.vbig { padding: 11px 14px; font-size: 15px; }
+.preview { gap: 8px; top: 8px; }
+
+/* extra compact: controls share lines */
+.panel { gap: 7px; padding: 10px; }
+.field { gap: 3px; }
+.rowx { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 8px; }
+.rowx .lbl, .sizebar .lbl { font-weight: 600; font-size: 13px; }
+.lrow { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.lrow .count { align-self: auto; }
+.file.mini { border: 0; padding: 0; gap: 0; flex: none; }
+.names { font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body:not(.vmode) #vidName { display: none; }
+#fileNames:empty { display: none; }
+textarea { min-height: 0; }
+textarea#headline { height: 52px; }
+.sizebar { flex-wrap: wrap; gap: 4px 8px; }
+.sizebar input[type=range] { min-width: 80px; }
+.sizebar .count { min-width: 0; }
+.tpls { gap: 4px; }
+.tplrow .ghost { margin-left: auto; align-self: center; }
+.tint { margin-top: 2px; }
+.thumbs { gap: 5px; }
+.pos { margin-top: 3px; padding: 5px 8px; }
+.pos .row { margin-top: 2px; }
+.pos .lbl { font-size: 12px; }
+.card-frame { border-radius: 8px; }
+
+/* look: Afterthought red + green, soft rounded controls */
+:root { --rd: #c8102e; --gn: #0f6a37; --tint: #f1f6f2; --shadow: 0 1px 2px rgba(20,40,25,.06), 0 6px 18px rgba(20,40,25,.07); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --rd: #ef4a63; --gn: #3fbf7a; --tint: #1a2a21; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.35); } }
+:root[data-theme="dark"] { --rd: #ef4a63; --gn: #3fbf7a; --tint: #1a2a21; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.35); }
+header h1 { font-size: 17px; font-weight: 800; letter-spacing: .2px; display: inline-flex; align-items: center; gap: 8px; margin: 0; }
+header h1::before { content: ""; width: 5px; height: 18px; border-radius: 3px; background: linear-gradient(180deg, var(--rd) 0 50%, var(--gn) 50% 100%); }
+.grid { margin-top: 10px; }
+.panel { border-radius: 14px; box-shadow: var(--shadow); border-color: color-mix(in srgb, var(--line) 70%, transparent); }
+.field > label, .field > .lbl, .lrow label, .rowx > .lbl, .sizebar > .lbl {
+  font-size: 12px; font-weight: 700; letter-spacing: .3px; color: var(--gn); display: inline-flex; align-items: center; gap: 6px;
+}
+.field > label::before, .field > .lbl::before, .lrow label::before, .rowx > .lbl::before, .sizebar > .lbl::before {
+  content: ""; width: 3px; height: 11px; border-radius: 2px; background: linear-gradient(180deg, var(--rd), var(--gn));
+}
+input[type="text"], textarea, select {
+  background: var(--tint); border: 1px solid transparent; border-radius: 10px; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gn) 18%, transparent);
+  transition: box-shadow .15s, background .15s;
+}
+input[type="text"]:focus, textarea:focus, select:focus { outline: none; box-shadow: inset 0 0 0 1.5px var(--gn), 0 0 0 3px color-mix(in srgb, var(--gn) 18%, transparent); background: var(--surface); }
+textarea::placeholder, input::placeholder { color: color-mix(in srgb, var(--muted) 75%, transparent); }
+.file .btn-like { background: linear-gradient(135deg, var(--gn), color-mix(in srgb, var(--gn) 70%, #000)); color: #fff; border-radius: 999px; padding: 6px 14px; font-size: 12.5px; box-shadow: 0 2px 6px color-mix(in srgb, var(--gn) 35%, transparent); }
+.file.mini:hover .btn-like { filter: brightness(1.1); }
+button.ghost { border-radius: 999px; border: 1px solid color-mix(in srgb, var(--gn) 35%, var(--line)); color: var(--gn); background: var(--surface); font-weight: 600; }
+button.ghost:hover { background: var(--tint); border-color: var(--gn); }
+button.primary { background: linear-gradient(135deg, var(--rd), color-mix(in srgb, var(--rd) 72%, #000)); border-radius: 999px; box-shadow: 0 3px 10px color-mix(in srgb, var(--rd) 35%, transparent); letter-spacing: .2px; }
+.swatch span { border-radius: 999px; border: 1.5px solid color-mix(in srgb, var(--gn) 25%, var(--line)); background: var(--surface); transition: background .15s, color .15s; }
+.swatch input:checked + span { background: linear-gradient(135deg, var(--gn), color-mix(in srgb, var(--gn) 70%, #000)); color: #fff; border-color: transparent; font-weight: 700; }
+.swatch input:checked + span i { box-shadow: 0 0 0 2px #fff; }
+.color { border-radius: 10px; background: var(--tint); border-color: transparent; }
+.color input { border-radius: 8px; }
+.chk { color: var(--fg); font-weight: 600; }
+input[type=range], .chk input { accent-color: var(--gn); }
+.pos { background: var(--tint); border: 0; border-radius: 10px; }
+.thumb img, .vthumb { border-radius: 10px; }
+.thumb.sel img { outline-color: var(--gn); }
+.more { border-top: 0; }
+.card-frame { border-radius: 12px; box-shadow: var(--shadow); border-color: transparent; }
+.count { font-weight: 600; }
+.names { font-style: normal; }
 </style>
 <style>html{-webkit-text-size-adjust:100%}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -155,26 +255,21 @@ button.primary:hover { filter: brightness(1.08); }
   <div class="grid">
     <section class="panel" aria-label="কার্ডের তথ্য">
       <div class="field">
-        <span class="lbl">ছবি নির্বাচন করুন (১ থেকে ৬টি)</span>
-        <label class="file" for="photos">
-          <input type="file" id="photos" accept="image/*" multiple>
-          <span class="btn-like">ছবি বাছাই করুন</span>
-          <span class="names" id="fileNames">কোনো ছবি বাছাই করা হয়নি</span>
-        </label>
-        <label class="file" for="vidFile" style="margin-top:8px">
-          <input type="file" id="vidFile" accept="video/*">
-          <span class="btn-like">ভিডিও বাছাই করুন</span>
-          <span class="names" id="vidName">ভিডিও নিউজের জন্য (ঐচ্ছিক)</span>
-        </label>
+        <div class="rowx">
+          <label class="file mini" for="photos"><input type="file" id="photos" accept="image/*" multiple><span class="btn-like">ছবি বাছাই</span></label>
+          <label class="file mini" for="vidFile"><input type="file" id="vidFile" accept="video/*"><span class="btn-like">ভিডিও বাছাই</span></label>
+          <label class="chk"><input type="checkbox" id="autoFit" checked> অটো সেট</label>
+          <button type="button" class="ghost" id="clearPhotos" hidden>সব সরান</button>
+        </div>
+        <div class="names" id="fileNames">কোনো ছবি বাছাই করা হয়নি</div>
+        <div class="names" id="vidName">ভিডিও নিউজের জন্য (ঐচ্ছিক)</div>
         <div class="thumbs" id="thumbs"></div>
-        <button type="button" class="ghost" id="clearPhotos" hidden>সব ছবি সরান</button>
-        <label class="chk" style="margin-top:8px"><input type="checkbox" id="autoFit" checked> ছবি নিজে থেকে সুন্দর করে বসান (অটো)</label>
         <div class="pos" id="posBox" hidden>
-          <span class="lbl" id="posTitle">ছবির অবস্থান ঠিক করুন</span>
+          <span class="lbl" id="posTitle">ছবির অবস্থান</span>
           <div class="row"><span class="k">বড়-ছোট</span><input type="range" id="pz" min="100" max="300" step="5" value="100"></div>
           <div class="row"><span class="k">ডান-বাম</span><input type="range" id="px" min="0" max="100" step="1" value="50"></div>
           <div class="row"><span class="k">উপর-নিচ</span><input type="range" id="py" min="0" max="100" step="1" value="50"></div>
-          <button type="button" class="ghost" id="posReset" style="margin-top:8px">এই ছবি আবার অটো করুন</button>
+          <button type="button" class="ghost" id="posReset" style="margin-top:4px">আবার অটো</button>
           <p class="hint">ছবির নম্বরে চাপ দিলে সেই ছবির অবস্থান বদলানো যাবে।</p>
         </div>
         <p class="hint" id="photoMsg" role="status"></p>
@@ -182,9 +277,8 @@ button.primary:hover { filter: brightness(1.08); }
       </div>
 
       <div class="field">
-        <label for="headline">সংবাদ শিরোনাম</label>
-        <textarea id="headline" maxlength="500" placeholder="এখানে সংবাদ শিরোনাম লিখুন"></textarea>
-        <span class="count" id="count"></span>
+        <div class="lrow"><label for="headline">সংবাদ শিরোনাম</label><span class="count" id="count"></span></div>
+        <textarea id="headline" rows="2" maxlength="500" placeholder="এখানে সংবাদ শিরোনাম লিখুন"></textarea>
         <div class="tint">
           <label class="color" for="cTint"><input type="color" id="cTint" value="#ffd60a"><span>নির্বাচিত অংশের রং</span></label>
           <button type="button" class="ghost" id="applyTint">নির্বাচিত অংশে রং</button>
@@ -194,12 +288,12 @@ button.primary:hover { filter: brightness(1.08); }
       </div>
 
       <div class="field">
-        <label for="sizeRange">শিরোনামের আকার</label>
         <div class="sizebar">
+          <label for="sizeRange" class="lbl">শিরোনামের আকার</label>
           <input type="range" id="sizeRange" min="30" max="110" step="2" value="76">
           <span class="count" id="sizeVal"></span>
+          <label class="chk" for="autoSize"><input type="checkbox" id="autoSize" checked> অটো</label>
         </div>
-        <label class="chk" for="autoSize"><input type="checkbox" id="autoSize" checked> জায়গা অনুযায়ী নিজে ঠিক হোক (স্বয়ংক্রিয়)</label>
         <p class="hint" id="sizeMsg"></p>
       </div>
 
@@ -212,25 +306,21 @@ button.primary:hover { filter: brightness(1.08); }
           <button type="button" class="ghost" id="clearTintSub">রং মুছুন</button>
         </div>
         <p class="hint" id="tintMsgSub"></p>
-        <div class="row" style="display:flex;gap:14px;flex-wrap:wrap;margin-top:6px">
-          <label class="chk"><input type="radio" name="subpos" value="below" checked> শিরোনামের নিচে</label>
-          <label class="chk"><input type="radio" name="subpos" value="above"> শিরোনামের উপরে</label>
+        <div class="rowx">
+          <label class="chk"><input type="radio" name="subpos" value="below" checked> নিচে</label>
+          <label class="chk"><input type="radio" name="subpos" value="above"> উপরে</label>
+          <input type="range" id="subOff" min="-200" max="200" step="2" value="0" aria-label="ছোট লেখা উপর-নিচ" style="flex:1;min-width:90px">
         </div>
-        <div class="pos" style="margin-top:6px;padding:6px 10px"><div class="row" style="margin-top:0"><span class="k">উপর-নিচ</span><input type="range" id="subOff" min="-200" max="200" step="2" value="0"></div></div>
       </div>
 
 
-      <div class="field">
+      <div class="rowx tplrow">
         <span class="lbl">টেমপ্লেট</span>
         <div class="swatches tpls" id="tpls">
           <label class="swatch"><input type="radio" name="tpl" value="overlay" checked><span>ওভারলে</span></label>
           <label class="swatch"><input type="radio" name="tpl" value="gframe"><span>গ্রিন ফ্রেম</span></label>
         </div>
-      </div>
-
-        <div class="more">
-        <button type="button" class="ghost" id="moreBtn" aria-expanded="false" aria-controls="moreFields">আরও অপশন দেখান ▾</button>
-        <p class="hint">নাম, সূত্র, ছবি সংগৃহীত, নিচের লেখা, বর্ডার আর রঙের অপশন এখানে পাবেন।</p>
+        <button type="button" class="ghost" id="moreBtn" aria-expanded="false" aria-controls="moreFields">আরও অপশন ▾</button>
       </div>
 
       <div class="more-fields" id="moreFields" hidden>
@@ -570,6 +660,7 @@ button.primary:hover { filter: brightness(1.08); }
   function syncVideoUI(on) {
     if (on === vidMode) { if (on) schedule(); return; }
     vidMode = on;
+    document.body.classList.toggle("vmode", on);
     $("vbar").hidden = !on;
     var cr = $("credit");   // "ছবি সংগৃহীত" becomes "ভিডিও সংগৃহীত" for videos (only while the text is untouched)
     if (on && cr.value.trim() === "ছবি সংগৃহীত") cr.value = "ভিডিও সংগৃহীত";
