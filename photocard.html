@@ -2,7 +2,9 @@
 <html lang="bn">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f6a37">
 <link rel="stylesheet" href="https://fonts.maateen.me/solaiman-lipi/font.css">
 <link rel="stylesheet" href="https://fonts.maateen.me/adorsho-lipi/font.css">
 <title>ফটোকার্ড মেকার</title>
@@ -208,6 +210,11 @@ textarea#headline { height: 52px; }
 header h1 { font-size: 17px; font-weight: 800; letter-spacing: .2px; display: inline-flex; align-items: center; gap: 8px; margin: 0; }
 header h1::before { content: ""; width: 5px; height: 18px; border-radius: 3px; background: linear-gradient(180deg, var(--rd) 0 50%, var(--gn) 50% 100%); }
 .grid { margin-top: 10px; }
+/* সব ডিভাইসের জন্য: আইফোনে ফোকাসে জুম বন্ধ, ল্যাপটপে একটু বড় লেখা, নচ/হোম বারের জায়গা */
+@supports (-webkit-touch-callout: none) { input, select, textarea { font-size: 16px !important; } #srchBox input[type=text] { height: 32px !important; } }
+@media (min-width: 1100px) { .wrap { zoom: 1.08; } }
+@media (pointer: coarse) { button, .btn-like, .chk { touch-action: manipulation; } }
+body { padding-bottom: max(40px, calc(env(safe-area-inset-bottom, 0px) + 20px)); -webkit-tap-highlight-color: transparent; }
 .panel { border-radius: 14px; box-shadow: var(--shadow); border-color: color-mix(in srgb, var(--line) 70%, transparent); }
 .field > label, .field > .lbl, .lrow label, .rowx > .lbl, .sizebar > .lbl {
   font-size: 12px; font-weight: 700; letter-spacing: .3px; color: var(--gn); display: inline-flex; align-items: center; gap: 6px;
@@ -249,6 +256,7 @@ input[type=range], .chk input { accent-color: var(--gn); }
 <div class="wrap">
   <header>
     <h1>ফটোকার্ড মেকার</h1>
+    <a href="index.html" id="portalLink" style="font-size:12.5px;font-weight:700;color:var(--gn);text-decoration:none">← নিউজ পোর্টাল</a>
     <p>ছবি, শিরোনাম আর সূত্রের নাম দিন। কার্ড সঙ্গে সঙ্গে তৈরি হবে।</p>
   </header>
 
@@ -264,15 +272,16 @@ input[type=range], .chk input { accent-color: var(--gn); }
         </div>
         <div id="srchBox" hidden>
           <style>
-            #srchBox { border: 1px solid var(--line); border-radius: 12px; padding: 8px; margin-top: 6px; display: flex; flex-direction: column; gap: 6px; background: var(--tint); }
+            #srchBox { border: 1px solid var(--line); border-radius: 10px; padding: 5px 6px; margin-top: 4px; display: flex; flex-direction: column; gap: 3px; background: var(--tint); font-size: 11.5px; }
+            #srchBox .rowx { gap: 4px; } #srchBox button { padding: 1px 8px !important; font-size: 11.5px !important; min-height: 0 !important; line-height: 1.5 !important; box-shadow: none !important; } #srchBox input[type=text] { padding: 2px 8px; font-size: 12px; min-height: 0; height: 26px; }
             #srchBox[hidden] { display: none; }
-            #srchBox .chips { display: flex; flex-wrap: wrap; gap: 5px; }
-            #srchBox .chips button { padding: 2px 10px; font-size: 12.5px; }
+            #srchBox .chips { display: flex; flex-wrap: wrap; gap: 3px; }
+            #srchBox .chips button { padding: 0 7px; font-size: 11px; }
             #srchBox input[type=text] { flex: 1; min-width: 0; }
-            #srchBox .sgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; max-height: 300px; overflow: auto; }
-            #srchBox .sgrid img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; cursor: pointer; display: block; background: #0002; }
+            #srchBox .sgrid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 3px; max-height: 190px; overflow: auto; }
+            #srchBox .sgrid img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 5px; cursor: pointer; display: block; background: #0002; }
             #srchBox .sgrid img.busy { opacity: .4; }
-            #srchBox .sm { font-size: 12px; color: var(--muted); margin: 0; }
+            #srchBox .sm { font-size: 10.5px; color: var(--muted); margin: 0; line-height: 1.3; }
           </style>
           <div class="rowx" id="pxKeyRow"><input type="text" id="pxKey" placeholder="Pixabay API key (একবার বসান)" autocomplete="off" aria-label="Pixabay API key"><button type="button" class="ghost" id="pxKeySave">সেভ</button><a href="https://pixabay.com/api/docs/" target="_blank" rel="noopener" class="sm">key কোথায় পাবেন?</a></div>
           <div class="rowx" id="pxKeyOk" hidden><span class="sm">✓ key সেভ আছে</span><button type="button" class="ghost" id="pxKeyChange">key বদলান</button></div>
@@ -280,7 +289,7 @@ input[type=range], .chk input { accent-color: var(--gn); }
           <div class="rowx"><input type="text" id="pxQ" placeholder="ইংরেজিতে লিখুন, যেমন: mosque" aria-label="খোঁজার শব্দ"><button type="button" class="ghost" id="pxGo">খুঁজুন</button></div>
           <div class="sgrid" id="pxGrid"></div>
           <div class="rowx"><button type="button" class="ghost" id="pxMore" hidden>আরও ছবি</button><span class="sm" id="pxMsg" role="status"></span></div>
-          <p class="sm">ছবির উৎস: <a href="https://pixabay.com" target="_blank" rel="noopener">Pixabay</a> (বিনামূল্যে ব্যবহারযোগ্য)। key পেতে pixabay.com-এ বিনামূল্যে অ্যাকাউন্ট খুলে API পাতা দেখুন।</p>
+          <p class="sm">ছবির উৎস: <a href="https://pixabay.com" target="_blank" rel="noopener">Pixabay</a> (বিনামূল্যে ব্যবহারযোগ্য)</p>
         </div>
         <div class="names" id="fileNames">কোনো ছবি বাছাই করা হয়নি</div>
         <div class="names" id="vidName">ভিডিও নিউজের জন্য (ঐচ্ছিক)</div>
@@ -991,9 +1000,22 @@ input[type=range], .chk input { accent-color: var(--gn); }
     $("vRec").textContent = "ভিডিও ডাউনলোড করুন";
     if (abort) setProg(null);
   }
+  var IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  // আইফোন/আইপ্যাডে ফাইল সরাসরি শেয়ার-শিটে যায়: সেখান থেকে ছবিতে সেভ বা ফেসবুকে পাঠানো যায়
+  function shareFile(b, name) {
+    try {
+      var f = new File([b], name, { type: b.type || "application/octet-stream" });
+      if (IOS && navigator.canShare && navigator.canShare({ files: [f] })) {
+        navigator.share({ files: [f] }).then(function () { $("msg").textContent = "হয়ে গেছে ✓"; }, function () { $("msg").textContent = "শেয়ার বাতিল হয়েছে।"; });
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  }
   function saveBlob(b, name) {
     var m = $("msg");
     var viaPlain = function () {
+      if (shareFile(b, name)) return;
       var a = document.createElement("a");
       a.href = URL.createObjectURL(b); a.download = name;
       document.body.appendChild(a); a.click(); a.remove();
@@ -1644,6 +1666,7 @@ input[type=range], .chk input { accent-color: var(--gn); }
       cv.toBlob(function (b) {
         if (!b) { m.textContent = fail; return; }
         var viaPlain = function () {
+          if (shareFile(b, "photocard.png")) return;
           var a = document.createElement("a");
           a.href = URL.createObjectURL(b); a.download = "photocard.png";
           document.body.appendChild(a); a.click(); a.remove();
